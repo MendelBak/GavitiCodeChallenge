@@ -4,8 +4,8 @@ import { ITransaction } from '../interfaces/ITransaction';
 
 const TransactionSchema = new Schema(
   {
-    customerId: {type: String, required: true},
-    invoiceId: {type: String, required: true},
+    customerId: { type: String, required: true },
+    invoiceId: { type: String, required: true },
   },
   { timestamps: true, minimize: false }
 );

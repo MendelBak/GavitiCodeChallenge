@@ -1,10 +1,5 @@
 import express from 'express';
 import mongoose from 'mongoose';
-
-// Internal
-// import { uri } from '../backend/config/dbConsts';
-// import keys from './config/keys';
-import cookieSession from 'cookie-session';
 import cors from 'cors';
 
 import passport from 'passport';
@@ -23,16 +18,7 @@ app.all('/*', (req, res, next) => {
   next();
 });
 
-// parse application/json
 app.use(express.json());
-
-// app.use(
-//   cookieSession({
-// milliseconds of a day
-// maxAge: 30 * 24 * 60 * 60 * 1000,
-// keys: [keys.session.cookieKey],
-//   })
-// );
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -58,7 +44,7 @@ app.listen(PORT, () => {
     );
 
     var db = mongoose.connection;
-    db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+    // db.on('error', console.error.bind(console, 'MongoDB connection error:'));
   } catch (err) {
     console.log('error starting the application ', err);
   }

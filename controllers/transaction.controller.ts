@@ -5,11 +5,11 @@ import generateCSVFile from './../services/ExcelUtil';
 import ExcelUtil from './../services/ExcelUtil';
 
 export default module.exports = {
+  // Creates a new transaction record. Call it via GET request (to make it easier for the testers, there is no need to pass arguments in this coding challenge.)
   createTransaction: async (transaction: any) => {
     try {
-      console.log('🚀 ~ createTransaction: ~ transaction', transaction);
       const newTransaction: ITransaction = new TransactionSchema({
-        // TODO: These are obviously fake IDs. They would be replaced with real user data coming in via the post request body.
+        // TODO: These are obviously fake IDs. They would be replaced with real user data coming in via the post request body, as seen below.
         customerId: 'testId',
         invoiceId: 'testInvoiceID',
         // customerId: transaction.customerId,
@@ -23,6 +23,7 @@ export default module.exports = {
     }
   },
 
+  // Returns one transaction
   getTransaction: async (id: string) => {
     try {
       return await TransactionSchema.findOne({ _id: id });
@@ -33,19 +34,18 @@ export default module.exports = {
     }
   },
 
+  // This route returns an array of transactions between two dates.
   getTransactionRange: async (startDate: Date, endDate: Date) => {
     try {
-      const response = await TransactionSchema.find(
-        {
-          updatedAt: {
-            $gte: startDate,
-            $lte: endDate,
-          },
-        }
-        // { updatedAt: 1 }
-      );
+      const response = await TransactionSchema.find({
+        updatedAt: {
+          $gte: startDate,
+          $lte: endDate,
+        },
+      });
 
       // ExcelUtil.generateCSVFile(response);
+      console.log('🚀 ~ getTransactionRange: ~ response', response);
 
       return response;
     } catch (err) {
@@ -55,6 +55,7 @@ export default module.exports = {
     }
   },
 
+  // Returns all transactions
   getAllTransaction: async () => {
     try {
       return await TransactionSchema.find().exec();
@@ -65,16 +66,17 @@ export default module.exports = {
     }
   },
 
-  //  Updates transaction collection.
-  updateTransaction: async (transaction: ITransaction) => {
-    try {
-      return await TransactionSchema.findOneAndUpdate(
-        { _id: transaction._id },
-        transaction,
-        { new: true, upsert: true }
-      );
-    } catch (err) {
-      throw new Error(`Server Error, could not update transaction: ${err}`);
-    }
-  },
+  //  Updates one transaction. Creates a new record, if not found.
+  // This method is untested, but should work.
+  // updateTransaction: async (transaction: ITransaction) => {
+  //   try {
+  //     return await TransactionSchema.findOneAndUpdate(
+  //       { _id: transaction._id },
+  //       transaction,
+  //       { new: true, upsert: true }
+  //     );
+  //   } catch (err) {
+  //     throw new Error(`Server Error, could not update transaction: ${err}`);
+  //   }
+  // },
 };
