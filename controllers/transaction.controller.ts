@@ -1,7 +1,5 @@
 import TransactionSchema from '../models/transaction.model';
 import { ITransaction } from '../interfaces/ITransaction';
-const mongoose = require('mongoose');
-import generateCSVFile from './../services/ExcelUtil';
 import ExcelUtil from './../services/ExcelUtil';
 
 export default module.exports = {
@@ -28,15 +26,15 @@ export default module.exports = {
     try {
       return await TransactionSchema.findOne({ _id: id });
     } catch (err) {
-      throw new Error(
-        `Server Error, could not return transation: ID = ${id} : ${err}`
-      );
+      throw new Error(`Server Error, could not return transaction: : ${err}`);
     }
   },
 
   // This route returns an array of transactions between two dates.
   getTransactionRange: async (startDate: Date, endDate: Date) => {
     try {
+      console.log('🚀 ~ This is your filter startDate -> ', startDate);
+      console.log('🚀 ~ This is your filter endDate -> ', endDate);
       const response = await TransactionSchema.find({
         updatedAt: {
           $gte: startDate,
@@ -44,10 +42,7 @@ export default module.exports = {
         },
       });
 
-      // ExcelUtil.generateCSVFile(response);
-      console.log('🚀 ~ getTransactionRange: ~ response', response);
-
-      return response;
+      return ExcelUtil.generateCSVFile(response);
     } catch (err) {
       throw new Error(
         `Server Error, could not return transaction range: ${err}`

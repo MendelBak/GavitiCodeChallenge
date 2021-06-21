@@ -1,8 +1,7 @@
-const Blob = require('cross-blob');
 var { Parser } = require('json2csv');
 
 export default class ExportUtil {
-  static generateCSVFile = (data: any) => {
+  static generateCSVFile = async (data: any) => {
     try {
       const fields = [
         {
@@ -27,11 +26,9 @@ export default class ExportUtil {
         },
       ];
 
-      const json2csv = new Parser({ fields: fields });
+      const json2csvParser = new Parser({ fields: fields });
 
-      const csv = json2csv.parse(data);
-      console.log('🚀 ~ csv', csv);
-      return csv;
+      return await json2csvParser.parse(data);
     } catch (error) {
       console.log('error:', error.message);
       throw new Error();

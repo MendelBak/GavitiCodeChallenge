@@ -1,14 +1,10 @@
 import express, { Router } from 'express';
 const router: Router = express.Router();
 import transactionController from '../../controllers/transaction.controller';
-import ExcelUtil from '../../services/ExcelUtil';
-import * as fs from 'file-saver';
-const Blob = require('cross-blob');
 
 // Returns all transactions
 router.get('/', async (req, res, next) => {
   try {
-    console.log('hit the get route');
     const transactions = await transactionController.getAllTransaction();
     res.status(200).send(transactions);
   } catch (err) {
@@ -22,7 +18,6 @@ router.post('/createTransaction', async (req, res, next) => {
     const newTransaction = await transactionController.createTransaction(
       req.body
     );
-    console.log('🚀 ~ router.post ~ newTransaction', newTransaction);
     res.status(201).send(newTransaction);
   } catch (err) {
     console.log('error creating new transaction ', err);
@@ -48,21 +43,18 @@ router.get(
   async (req, res, next) => {
     try {
       // Convert string params into UNIX date format.
-      // This was a bit tricky to figure out. I haven't worked with dates in a while and dates can be very tricky.
+      // This was a bit tricky to figure out. I haven't worked with dates in a while and dates can be very tricky. I had some trouble getting the UNIX timestamp to behave.
       let startDate: Date = new Date(parseInt(req.params.startDate));
       let endDate: Date = new Date(parseInt(req.params.endDate));
 
-      const transactions = await transactionController.getTransactionRange(
+      const csvFile = await transactionController.getTransactionRange(
         startDate,
         endDate
       );
-      const csvFile: any = ExcelUtil.generateCSVFile(transactions);
 
       res.header('Content-Type', 'text/csv');
       res.attachment('gavitiCSVFile.csv');
-
       res.status(200).send(csvFile);
-      // res.download('/helloworld.csv')
     } catch (err) {
       console.log('Server error: Could not get transaction range', err);
       next(err);
