@@ -2,6 +2,8 @@ import express, { Router } from 'express';
 const router: Router = express.Router();
 import transactionController from '../../controllers/transaction.controller';
 import ExcelUtil from '../../services/ExcelUtil';
+import * as fs from 'file-saver';
+const Blob = require('cross-blob');
 
 // Returns all transactions
 router.get('/', async (req, res, next) => {
@@ -14,10 +16,9 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// Returning the model upon creation to return the _id that is auto-created by mongoose.
+// Creates one transaction record
 router.post('/createTransaction', async (req, res, next) => {
   try {
-    console.log('create new transaction');
     const newTransaction = await transactionController.createTransaction(
       req.body
     );
@@ -29,6 +30,7 @@ router.post('/createTransaction', async (req, res, next) => {
   }
 });
 
+// GET one transaction
 router.get('/getTransaction/:id', async (req, res, next) => {
   try {
     const id = req.params.id;
@@ -40,6 +42,7 @@ router.get('/getTransaction/:id', async (req, res, next) => {
   }
 });
 
+// GET transactions between two date ranges.
 router.get(
   '/getTransactionRange/:startDate/:endDate',
   async (req, res, next) => {
@@ -53,11 +56,13 @@ router.get(
         startDate,
         endDate
       );
-      const test: any = ExcelUtil.generateCSVFile(transactions);
-      res.attachment(test);
-      res.status(200).send(transactions);
+      const csvFile: any = ExcelUtil.generateCSVFile(transactions);
 
-      // res.sendFile(test);
+      res.header('Content-Type', 'text/csv');
+      res.attachment('gavitiCSVFile.csv');
+
+      res.status(200).send(csvFile);
+      // res.download('/helloworld.csv')
     } catch (err) {
       console.log('Server error: Could not get transaction range', err);
       next(err);
@@ -65,17 +70,8 @@ router.get(
   }
 );
 
+// I did not test this route during the creation of this coding challenge, since it's not part of the challenge requirements, but it should work.
 // router.put('/updateTransaction', async (req, res, next) => {
-//   try {
-//     await transactionController.updateTransaction(req.body);
-//     res.status(201).send();
-//   } catch (err) {
-//     console.log('Error updating transaction', err);
-//     next(err);
-//   }
-// });
-
-// router.put('/updateTransactions', async (req, res, next) => {
 //   try {
 //     await transactionController.updateTransaction(req.body);
 //     res.status(201).send();
